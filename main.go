@@ -13,7 +13,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/cookiejar"
-	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -176,14 +175,9 @@ func (c *Client) Fetch() (*Status, *transferSummary, error) {
 	}
 	defer resp.Body.Close()
 	br := bufio.NewReader(resp.Body)
-	started := time.Now()
-	const timeout = 500 * time.Millisecond
 	var traffic *transferSummary
 	var status *taxonomy
 	for {
-		if time.Since(started) > timeout {
-			return nil, nil, errors.New("timeout")
-		}
 		event, data, err := sse(br)
 		if err == io.EOF {
 			return nil, nil, errors.New("protocol error")
