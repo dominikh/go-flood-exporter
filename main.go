@@ -166,6 +166,7 @@ func (c *Client) Fetch() (*Status, *transferSummary, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	defer resp.Body.Close()
 	if cat := resp.StatusCode / 100; cat == 4 || cat == 5 {
 		return nil, nil, errors.New("unexpected status code")
 	}
